@@ -9,7 +9,8 @@ use App\Http\Controllers\{
     DeviceAssignmentController,
     DeviceTypeController,
     EmployeeController,
-    AssignmentController
+    AssignmentController,
+    DashboardController
 };
 
 // =========================
@@ -22,11 +23,27 @@ Route::get('/', function () {
 // =========================
 // 📊 Dashboard (solo autenticados)
 // =========================
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+// Route::view('dashboard', 'dashboard')
+//     ->middleware(['auth', 'verified'])
+//     ->name('dashboard');
+// Route::get('/dashboard', [DashboardController::class, 'index'])
+//     ->middleware(['auth'])
+//     ->name('dashboard');
+
 
 Route::middleware(['auth'])->group(function () {
+
+    // Dashboard principal
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
+
+    // AJAX: equipos por tipo
+    Route::get('/dashboard/company/{company}/devices-by-type', [DashboardController::class, 'devicesByType'])
+        ->name('dashboard.company.devicesByType');
+
+    // AJAX: equipos asignados por tipo
+    Route::get('/dashboard/company/{company}/employees-by-type', [DashboardController::class, 'employeesByType'])
+        ->name('dashboard.company.employeesByType');
 
     // =========================
     // ⚙️ Configuración de usuario (Livewire Volt)
