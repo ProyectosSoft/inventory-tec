@@ -22,9 +22,19 @@
         {{-- Empresa --}}
         <select name="company_id" class="w-full rounded border px-3 py-2">
             <option value="">Todas las empresas</option>
-            @foreach (\App\Models\Company::orderBy('name')->get() as $company)
+            @foreach ($companies as $company)
                 <option value="{{ $company->id }}" @selected(request('company_id') == $company->id)>
                     {{ $company->name }}
+                </option>
+            @endforeach
+        </select>
+
+        {{-- Empleado --}}
+        <select name="employee_id" class="w-full rounded border px-3 py-2">
+            <option value="">Todos los empleados</option>
+            @foreach ($employees as $employee)
+                <option value="{{ $employee->id }}" @selected(request('employee_id') == $employee->id)>
+                    {{ $employee->first_name }} {{ $employee->last_name }}{{ $employee->document_id ? ' - ' . $employee->document_id : '' }}
                 </option>
             @endforeach
         </select>
@@ -36,8 +46,8 @@
             <option value="returned" @selected(request('status') === 'returned')>Devueltos</option>
         </select>
 
-        {{-- Búsqueda --}}
-        <div class="flex gap-2 col-span-2">
+        {{-- Búsqueda adicional --}}
+        <div class="flex gap-2">
             <input type="text" name="q" value="{{ request('q') }}" placeholder="Buscar empleado, documento o tag..."
                 class="w-full rounded border px-3 py-2">
             <button class="px-3 py-2 rounded border bg-zinc-100 hover:bg-zinc-200">Buscar</button>

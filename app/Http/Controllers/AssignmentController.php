@@ -25,15 +25,27 @@ class AssignmentController extends Controller
      */
     public function index(Request $request)
     {
+        $companies = Company::orderBy('name')->get(['id', 'name']);
+        $employees = Employee::orderBy('first_name')
+            ->orderBy('last_name')
+            ->get(['id', 'first_name', 'last_name', 'document_id']);
+
         $query = DeviceAssignment::with([
             'company',
             'employee',
             'items.device.type',
-        ])->orderByDesc('assigned_at');
+        ])
+            ->orderByDesc('created_at')
+            ->orderByDesc('id');
 
         // 🔹 Filtro por empresa
         if ($request->filled('company_id')) {
             $query->where('company_id', $request->company_id);
+        }
+
+        // 🔹 Filtro por empleado
+        if ($request->filled('employee_id')) {
+            $query->where('employee_id', $request->employee_id);
         }
 
         // 🔹 Filtro por estado
@@ -65,8 +77,8 @@ class AssignmentController extends Controller
             });
         }
 
-        $assignments = $query->paginate(15);
-        return view('assignments.index', compact('assignments'));
+        $assignments = $query->paginate(15)->withQueryString();
+        return view('assignments.index', compact('assignments', 'companies', 'employees'));
     }
 
     /**
